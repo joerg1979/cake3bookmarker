@@ -73,6 +73,14 @@ Router::scope('/', function ($routes) {
     $routes->fallbacks('InflectedRoute');
 });
 
+Router::scope(
+        '/bookmarks',
+        ['controller' => 'Bookmarks'],
+        function ($routes){
+            $routes->connect('/tagged/*', ['action' => 'tags']);
+        });
+
+
 /**
  * Load all plugin routes.  See the Plugin documentation on
  * how to customize the loading of plugin routes.

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Table;
 
 use App\Model\Entity\Bookmark;
@@ -10,8 +11,7 @@ use Cake\Validation\Validator;
 /**
  * Bookmarks Model
  */
-class BookmarksTable extends Table
-{
+class BookmarksTable extends Table {
 
     /**
      * Initialize method
@@ -19,8 +19,7 @@ class BookmarksTable extends Table
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config)
-    {
+    public function initialize(array $config) {
         $this->table('bookmarks');
         $this->displayField('title');
         $this->primaryKey('id');
@@ -41,17 +40,16 @@ class BookmarksTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator)
-    {
+    public function validationDefault(Validator $validator) {
         $validator
-            ->add('id', 'valid', ['rule' => 'numeric'])
-            ->allowEmpty('id', 'create')
-            ->add('user_id', 'valid', ['rule' => 'numeric'])
-            ->requirePresence('user_id', 'create')
-            ->notEmpty('user_id')
-            ->allowEmpty('title')
-            ->allowEmpty('description')
-            ->allowEmpty('url');
+                ->add('id', 'valid', ['rule' => 'numeric'])
+                ->allowEmpty('id', 'create')
+                ->add('user_id', 'valid', ['rule' => 'numeric'])
+                ->requirePresence('user_id', 'create')
+                ->notEmpty('user_id')
+                ->allowEmpty('title')
+                ->allowEmpty('description')
+                ->allowEmpty('url');
 
         return $validator;
     }
@@ -63,9 +61,29 @@ class BookmarksTable extends Table
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules)
-    {
+    public function buildRules(RulesChecker $rules) {
         $rules->add($rules->existsIn(['user_id'], 'Users'));
         return $rules;
+    }
+    
+    /**
+     * Finding tagged method
+     * 
+     * @param Query $query
+     * @param array $options
+     * @return type
+     */
+    public function findTagged(Query $query, array $options){
+        $fields = [
+            'Bookmarks.id',
+            'Bookmarks.title',
+            'Bookmarks.url'
+        ];
+        return $this->find()
+                ->distinct($fields)
+                ->matching('Tags', function ($q) use ($options){
+                    return $q->where(['Tags.title IN' => $options['tags']]);
+                    
+                });
     }
 }
