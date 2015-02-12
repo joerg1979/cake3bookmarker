@@ -37,5 +37,25 @@ class AppController extends Controller
     public function initialize()
     {
         $this->loadComponent('Flash');
+        $this->loadComponent('Auth', [
+            'authorize' => 'Controller',
+            'authenticate' => [
+                'Form' => [
+                    'fields' => [
+                        'username' => 'email',
+                        'password' => 'password'
+                    ]
+                ]
+            ],
+            'unauthorizedRedirect' => [
+                'controller' => 'Users',
+                'action' => 'login'
+            ]
+        ]);
+        $this->Auth->allow(['display']);
+    }
+    
+    public function isAuthorized($user){
+        return FALSE;
     }
 }
